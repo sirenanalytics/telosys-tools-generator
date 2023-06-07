@@ -16,6 +16,7 @@
 package org.telosys.tools.generator.context;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -171,6 +172,14 @@ public class AttributeInContext {
 	
     private final boolean isUnique ;  // v 3.4.0
 
+	//SICODE - Begin
+	private ArrayList<List<String>> sirenCustomMatrix = null;
+	
+	public ArrayList<List<String>> getSirenCustomAnnotations() {
+		return sirenCustomMatrix;
+	}
+	//SICODE - End
+
     //-----------------------------------------------------------------------------------------------
 	/**
 	 * Constructor to create an ATTRIBUTE in the generator context
@@ -284,6 +293,9 @@ public class AttributeInContext {
 		
 		this.isUnique = attribute.isUnique() ;  // v 3.4.0
 
+		//SICODE - Begin
+		sirenCustomMatrix = attribute.getSirenCustomAnnotations();
+		//SICODE - End
 	}
 
 	protected final LanguageType getLanguageType() {

@@ -46,6 +46,8 @@ import org.telosys.tools.generator.context.names.ContextName;
 import org.telosys.tools.generator.engine.GeneratorContext;
 import org.telosys.tools.generic.model.Model;
 
+import com.sirenanalytics.telosys.tools.generator.context.SirenJpaInContext;
+
 /**
  * Utility class to construct a GeneratorContext 
  * 
@@ -153,6 +155,8 @@ public class GeneratorContextBuilder {
 		generatorContext.put(ContextName.PHP,             new PhpInContext());  // PHP utilities ( ver 4.1.0 )
 		generatorContext.put(ContextName.CSHARP,          new CsharpInContext());  // C# utilities ( ver 4.1.0 )
 		
+		//SICODE
+		generatorContext.put(ContextName.SIJPA,           new SirenJpaInContext());   // JPA utility functions
 
 		//--- Set the dynamic class loader 
 		Loader loader = new Loader( telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ); 
