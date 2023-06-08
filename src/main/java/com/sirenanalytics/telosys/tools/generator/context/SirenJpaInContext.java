@@ -15,26 +15,11 @@
  */
 package com.sirenanalytics.telosys.tools.generator.context;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.telosys.tools.commons.StrUtil;
-import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.context.AttributeInContext;
-import org.telosys.tools.generator.context.EntityInContext;
-import org.telosys.tools.generator.context.ForeignKeyAttributeInContext;
-import org.telosys.tools.generator.context.ForeignKeyInContext;
-import org.telosys.tools.generator.context.GeneratorContextException;
-import org.telosys.tools.generator.context.LinkAttributeInContext;
-import org.telosys.tools.generator.context.LinkInContext;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
-import org.telosys.tools.generator.context.doc.VelocityNoDoc;
 import org.telosys.tools.generator.context.doc.VelocityObject;
-import org.telosys.tools.generator.context.doc.VelocityReturnType;
 import org.telosys.tools.generator.context.names.ContextName;
-import org.telosys.tools.generator.context.tools.AnnotationsBuilder;
-import org.telosys.tools.generator.context.tools.JpaAnnotations;
-import org.telosys.tools.generator.context.tools.ListBuilder;
+import org.telosys.tools.generic.model.SirenParams;
 import org.telosys.tools.generic.model.enums.BooleanValue;
 import org.telosys.tools.generic.model.enums.FetchType;
 
@@ -87,23 +72,26 @@ public class SirenJpaInContext {
 	)
 	public String fieldAnnotations(int leftMargin, AttributeInContext attribute )
     {
-//		String ret = "SIREN";
-		String ret = "";
-		List<List<String>> list = attribute != null ? attribute.getSirenCustomAnnotations() : null;
-		if (list != null) {
-			for(int l=0; l<list.size(); l++) {
-				List<String> line = list.get(l);
-				if (line != null) {
-					ret += "    @"+line.get(0)+"("+line.get(1)+"="+line.get(2);
-					
-					for(int p=3; p<line.size(); p += 2) {
-						ret += ", "+line.get(p)+"="+line.get(p+1)+"";
-					}
-					
-					ret += ")";
-				}
+		StringBuffer ret = new StringBuffer();
+		SirenParams sirenParams = attribute.getSirenParams();
+		if (sirenParams != null) {
+			//NotBlank
+			if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null
+			    && sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Message) != null
+					) {
+				ret.append("    @NotBlank");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(message=\"");
+				ret.append(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Message));
+				ret.append("\")");
 			}
-		}		
-		return ret; 
+			if(		sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null
+				//&&  sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Message) != null
+					) {
+				ret.append("    @");
+				ret.append(SirenParams.ArabicOrEnglishOnlyConstraint);
+			}			
+		}
+		return ret.toString(); 
     }
 }

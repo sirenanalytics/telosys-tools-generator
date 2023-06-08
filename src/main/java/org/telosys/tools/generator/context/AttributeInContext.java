@@ -16,7 +16,6 @@
 package org.telosys.tools.generator.context;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,6 +35,7 @@ import org.telosys.tools.generator.languages.types.LanguageType;
 import org.telosys.tools.generator.languages.types.TypeConverter;
 import org.telosys.tools.generic.model.Attribute;
 import org.telosys.tools.generic.model.ForeignKeyPart;
+import org.telosys.tools.generic.model.SirenParams;
 import org.telosys.tools.generic.model.TagContainer;
 import org.telosys.tools.generic.model.enums.BooleanValue;
 import org.telosys.tools.generic.model.enums.GeneratedValueStrategy;
@@ -173,10 +173,9 @@ public class AttributeInContext {
     private final boolean isUnique ;  // v 3.4.0
 
 	//SICODE - Begin
-	private ArrayList<List<String>> sirenCustomMatrix = null;
-	
-	public ArrayList<List<String>> getSirenCustomAnnotations() {
-		return sirenCustomMatrix;
+	private SirenParams sirenParams;
+	public SirenParams getSirenParams() {
+		return sirenParams;
 	}
 	//SICODE - End
 
@@ -294,7 +293,7 @@ public class AttributeInContext {
 		this.isUnique = attribute.isUnique() ;  // v 3.4.0
 
 		//SICODE - Begin
-		sirenCustomMatrix = attribute.getSirenCustomAnnotations();
+		sirenParams = attribute.getSirenParams();
 		//SICODE - End
 	}
 
