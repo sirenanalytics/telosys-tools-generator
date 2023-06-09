@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.context.AttributeInContext;
 import org.telosys.tools.generator.context.EntityInContext;
+import org.telosys.tools.generator.context.LinkInContext;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
 import org.telosys.tools.generator.context.doc.VelocityObject;
 import org.telosys.tools.generator.context.names.ContextName;
@@ -48,6 +50,36 @@ public class SirenJpaInContext {
 		super();
 	}
 	
+	private void sirenParamsToIncludes(SirenParams sirenParams, HashMap<String, String> includes) {
+		if (sirenParams != null) {
+			//NotBlank
+			if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null) {
+				includes.put("import javax.validation.constraints.NotBlank;", "import javax.validation.constraints.NotBlank;");
+			}
+			if(	   sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null
+				|| sirenParams.getSirenParam(SirenParams.KeyNotNull, SirenParams.Exists) != null) {
+				includes.put("import javax.validation.constraints.NotNull;", "import javax.validation.constraints.NotNull;");
+			}				
+			if(sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
+				includes.put("import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;", "import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;");
+			}
+			if(sirenParams.getSirenParam(SirenParams.EmailConstraint, SirenParams.Exists) != null) {
+				includes.put("import com.sirenanalytics.booking.model.validation.EmailConstraint;", "import com.sirenanalytics.booking.model.validation.EmailConstraint;");
+			}
+			if(sirenParams.getSirenParam(SirenParams.LebaneseMobileConstraint, SirenParams.Exists) != null) {
+				includes.put("import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;", "import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;");
+			}
+			if(sirenParams.getSirenParam(SirenParams.NumbersGreaterThanZeroOnlyConstraint, SirenParams.Exists) != null) {
+				includes.put("import com.sirenanalytics.booking.model.validation.NumbersGreaterThanZeroOnlyConstraint;", "import com.sirenanalytics.booking.model.validation.NumbersGreaterThanZeroOnlyConstraint;");
+			}			
+			if(    sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Exists) != null
+				|| sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Exists) != null
+				|| sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Exists) != null) {
+				includes.put("import javax.validation.constraints.Size;", "import javax.validation.constraints.Size;");					
+			}
+		}
+	}
+	
 	//-------------------------------------------------------------------------------------
 	// ENTITY JPA ANNOTATIONS
 	//-------------------------------------------------------------------------------------
@@ -68,39 +100,27 @@ public class SirenJpaInContext {
 	public String fieldAnnotationIncludes(int iLeftMargin, EntityInContext entity)
     {
 		HashMap<String, String> includes = new HashMap<String, String>();
-		
 		List<AttributeInContext> list = entity.getAttributes();
 		for (int i=0; i<list.size(); i++) {
 			AttributeInContext attribute = list.get(i);
 
 			SirenParams sirenParams = attribute.getSirenParams();
 			if (sirenParams != null) {
-				//NotBlank
-				if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null) {
-					includes.put("import javax.validation.constraints.NotBlank;", "import javax.validation.constraints.NotBlank;");
-				}
-				if(sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null) {
-					includes.put("import javax.validation.constraints.NotNull;", "import javax.validation.constraints.NotNull;");
-				}
-				if(sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
-					includes.put("import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;", "import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;");
-				}
-				if(sirenParams.getSirenParam(SirenParams.EmailConstraint, SirenParams.Exists) != null) {
-					includes.put("import com.sirenanalytics.booking.model.validation.EmailConstraint;", "import com.sirenanalytics.booking.model.validation.EmailConstraint;");
-				}
-				if(sirenParams.getSirenParam(SirenParams.LebaneseMobileConstraint, SirenParams.Exists) != null) {
-					includes.put("import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;", "import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;");
-				}
-				if(    sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Exists) != null
-					|| sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Exists) != null
-					|| sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Exists) != null) {
-					includes.put("import javax.validation.constraints.Size;", "import javax.validation.constraints.Size;");					
-				}
+				sirenParamsToIncludes(sirenParams, includes);
+			}
+		}
+		
+		List<LinkInContext> links = entity.getLinks();
+		for (int i=0; i<links.size(); i++) {
+			LinkInContext attribute = links.get(i);
+
+			SirenParams sirenParams = attribute.getSirenParams();
+			if (sirenParams != null) {
+				sirenParamsToIncludes(sirenParams, includes);
 			}
 		}
 
 		ArrayList<String> arr = new ArrayList<String>();
-		
 		Iterator<String> iter = includes.values().iterator();
 		while (iter != null && iter.hasNext()) {
 			arr.add(iter.next());
@@ -133,8 +153,32 @@ public class SirenJpaInContext {
 	)
 	public String fieldAnnotations(int leftMargin, AttributeInContext attribute )
     {
-		StringBuffer ret = new StringBuffer();
 		SirenParams sirenParams = attribute.getSirenParams();
+		return fieldAnnotations(leftMargin, sirenParams);
+    }
+	
+	@VelocityMethod(
+			text={	
+				"Returns a string containing all the JPA annotations for the given link",
+				"@ManyToOne, @OneToMany, etc",
+				"@JoinColumns / @JoinColumn "
+				},
+			example={ 
+				"$jpa.linkAnnotations( 4, $link )" },
+			parameters = { 
+				"leftMargin : the left margin (number of blanks)",
+				"link : the link from which the JPA annotations will be generated"},
+			since = "3.3.0"
+	)
+	public String linkAnnotations( int leftMargin, LinkInContext link )
+				throws GeneratorException {
+		SirenParams sirenParams = link.getSirenParams();
+		return fieldAnnotations(leftMargin, sirenParams);
+	}
+	
+	private String fieldAnnotations(int leftMargin, SirenParams sirenParams) 
+	{
+		StringBuffer ret = new StringBuffer();
 		if (sirenParams != null) {
 			//NotBlank
 			if(    sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null
@@ -156,7 +200,17 @@ public class SirenJpaInContext {
 				ret.append("(message=\"");
 				ret.append(sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Message));
 				ret.append("\")");
-			}			
+			}
+			if(    sirenParams.getSirenParam(SirenParams.KeyNotNull, SirenParams.Exists) != null
+				    && sirenParams.getSirenParam(SirenParams.KeyNotNull, SirenParams.Message) != null
+						) {
+					if(ret.length() > 0) ret.append("\n");
+					ret.append("    @NotNull");
+					//ret.append(SirenParams.NoBlanks);
+					ret.append("(message=\"");
+					ret.append(sirenParams.getSirenParam(SirenParams.KeyNotNull, SirenParams.Message));
+					ret.append("\")");
+				}						
 			if(		sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
 				if(ret.length() > 0) ret.append("\n");
 				ret.append("    @");

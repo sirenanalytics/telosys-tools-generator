@@ -29,6 +29,7 @@ import org.telosys.tools.generator.languages.types.TypeConverter;
 import org.telosys.tools.generic.model.CascadeOptions;
 import org.telosys.tools.generic.model.Link;
 import org.telosys.tools.generic.model.LinkAttribute;
+import org.telosys.tools.generic.model.SirenParams;
 import org.telosys.tools.generic.model.TagContainer;
 import org.telosys.tools.generic.model.enums.BooleanValue;
 import org.telosys.tools.generic.model.enums.Cardinality;
@@ -96,6 +97,13 @@ public class LinkInContext {
 
 	private final boolean      isOrphanRemoval ; // Added in v 4.1.0
 
+	//SICODE - Begin
+	private SirenParams sirenParams;
+	public SirenParams getSirenParams() {
+		return sirenParams;
+	}
+	//SICODE - End
+	
 	//-------------------------------------------------------------------------------------
 	/**
 	 * Constructor
@@ -144,6 +152,10 @@ public class LinkInContext {
 		this.tagContainer = link.getTagContainer(); // V 3.4.0
 		
 		this.isOrphanRemoval = link.isOrphanRemoval(); // v 4.1.0
+		
+		//SICODE - Begin
+		sirenParams = link.getSirenParams();
+		//SICODE - End		
 	}
 	
 	/**
