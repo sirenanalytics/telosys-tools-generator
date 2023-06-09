@@ -15,13 +15,19 @@
  */
 package com.sirenanalytics.telosys.tools.generator.context;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.telosys.tools.generator.context.AttributeInContext;
+import org.telosys.tools.generator.context.EntityInContext;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
 import org.telosys.tools.generator.context.doc.VelocityObject;
 import org.telosys.tools.generator.context.names.ContextName;
+import org.telosys.tools.generator.context.tools.AnnotationsBuilder;
 import org.telosys.tools.generic.model.SirenParams;
-import org.telosys.tools.generic.model.enums.BooleanValue;
-import org.telosys.tools.generic.model.enums.FetchType;
 
 //-------------------------------------------------------------------------------------
 @VelocityObject(
@@ -35,26 +41,81 @@ import org.telosys.tools.generic.model.enums.FetchType;
 //-------------------------------------------------------------------------------------
 public class SirenJpaInContext {
 
-	private boolean   genTargetEntity = false ; // v 3.3.0
-	private String    collectionType  = "List" ; // next ver after v 3.3.0
-	
-	private FetchType linkManyToOneFetchType  = FetchType.UNDEFINED; // v 3.3.0
-	private FetchType linkOneToOneFetchType   = FetchType.UNDEFINED; // v 3.3.0
-	private FetchType linkOneToManyFetchType  = FetchType.UNDEFINED; // v 3.3.0
-	private FetchType linkManyToManyFetchType = FetchType.UNDEFINED; // v 3.3.0
-	
-	private BooleanValue joinColumnInsertable = BooleanValue.UNDEFINED; // v 3.3.0
-	private BooleanValue joinColumnUpdatable  = BooleanValue.UNDEFINED; // v 3.3.0
-	
-	private boolean  genColumnDefinition = false ; // v 3.4.0
-	
 	//-------------------------------------------------------------------------------------
 	// CONSTRUCTOR
 	//-------------------------------------------------------------------------------------
 	public SirenJpaInContext() {
 		super();
 	}
+	
+	//-------------------------------------------------------------------------------------
+	// ENTITY JPA ANNOTATIONS
+	//-------------------------------------------------------------------------------------
+	@VelocityMethod ( 
+		text= { 
+			"Returns a multiline String containing all the Java JPA annotations required for the current entity",
+			"with the given left marging before each line"
+		},
+		parameters = {
+			"leftMargin : the left margin (number of blanks)",
+			"entity : the entity to be annotated"
+		},
+		example={	
+			"$sijpa.fieldAnnotationIncludes(4, $entity)"
+		},
+		since = "2.0.7"
+	)
+	public String fieldAnnotationIncludes(int iLeftMargin, EntityInContext entity)
+    {
+		HashMap<String, String> includes = new HashMap<String, String>();
+		
+		List<AttributeInContext> list = entity.getAttributes();
+		for (int i=0; i<list.size(); i++) {
+			AttributeInContext attribute = list.get(i);
 
+			SirenParams sirenParams = attribute.getSirenParams();
+			if (sirenParams != null) {
+				//NotBlank
+				if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null) {
+					includes.put("import javax.validation.constraints.NotBlank;", "import javax.validation.constraints.NotBlank;");
+				}
+				if(sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null) {
+					includes.put("import javax.validation.constraints.NotNull;", "import javax.validation.constraints.NotNull;");
+				}
+				if(sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
+					includes.put("import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;", "import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;");
+				}
+				if(sirenParams.getSirenParam(SirenParams.EmailConstraint, SirenParams.Exists) != null) {
+					includes.put("import com.sirenanalytics.booking.model.validation.EmailConstraint;", "import com.sirenanalytics.booking.model.validation.EmailConstraint;");
+				}
+				if(sirenParams.getSirenParam(SirenParams.LebaneseMobileConstraint, SirenParams.Exists) != null) {
+					includes.put("import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;", "import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;");
+				}
+				if(    sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Exists) != null
+					|| sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Exists) != null
+					|| sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Exists) != null) {
+					includes.put("import javax.validation.constraints.Size;", "import javax.validation.constraints.Size;");					
+				}
+			}
+		}
+
+		ArrayList<String> arr = new ArrayList<String>();
+		
+		Iterator<String> iter = includes.values().iterator();
+		while (iter != null && iter.hasNext()) {
+			arr.add(iter.next());
+		}
+
+		Collections.sort(arr);
+		
+		AnnotationsBuilder b = new AnnotationsBuilder(iLeftMargin);
+		for(String imp : arr) {
+			b.addLine(imp);
+		}
+		
+		return b.getAnnotations();
+    }
+	
 	//-------------------------------------------------------------------------------------------------------------
 	// J.P.A. ANNOTATIONS FOR FIELDS
 	//-------------------------------------------------------------------------------------------------------------
@@ -76,7 +137,7 @@ public class SirenJpaInContext {
 		SirenParams sirenParams = attribute.getSirenParams();
 		if (sirenParams != null) {
 			//NotBlank
-			if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null
+			if(    sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null
 			    && sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Message) != null
 					) {
 				ret.append("    @NotBlank");
@@ -85,12 +146,70 @@ public class SirenJpaInContext {
 				ret.append(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Message));
 				ret.append("\")");
 			}
-			if(		sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null
-				//&&  sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Message) != null
+			//NotNulls
+			if(    sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null
+			    && sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Message) != null
 					) {
+				if(ret.length() > 0) ret.append("\n");
+				ret.append("    @NotNull");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(message=\"");
+				ret.append(sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Message));
+				ret.append("\")");
+			}			
+			if(		sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
+				if(ret.length() > 0) ret.append("\n");
 				ret.append("    @");
 				ret.append(SirenParams.ArabicOrEnglishOnlyConstraint);
+			}
+			if(		sirenParams.getSirenParam(SirenParams.LebaneseMobileConstraint, SirenParams.Exists) != null) {
+					if(ret.length() > 0) ret.append("\n");
+					ret.append("    @");
+					ret.append(SirenParams.LebaneseMobileConstraint);
+			}
+			if(		sirenParams.getSirenParam(SirenParams.NumbersGreaterThanZeroOnlyConstraint, SirenParams.Exists) != null) {
+				if(ret.length() > 0) ret.append("\n");
+				ret.append("    @");
+				ret.append(SirenParams.NumbersGreaterThanZeroOnlyConstraint);
 			}			
+			if(		sirenParams.getSirenParam(SirenParams.EmailConstraint, SirenParams.Exists) != null) {
+				if(ret.length() > 0) ret.append("\n");
+				ret.append("    @");
+				ret.append(SirenParams.EmailConstraint);
+			}			
+			if(        sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Exists) != null
+				    && sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Min) != null
+				    && sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Max) != null
+					) {
+				if(ret.length() > 0) ret.append("\n");				
+				ret.append("    @Size");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(min=");
+				ret.append(sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Min));
+				ret.append(", max=");
+				ret.append(sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Max));					
+				ret.append(")");
+			}
+			if(        sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Exists) != null
+				    && sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Min) != null
+					) {
+				if(ret.length() > 0) ret.append("\n");				
+				ret.append("    @Size");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(min=");
+				ret.append(sirenParams.getSirenParam(SirenParams.MinSize, SirenParams.Min));
+				ret.append(")");
+			}
+			if(        sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Exists) != null
+				    && sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Max) != null
+					) {
+				if(ret.length() > 0) ret.append("\n");				
+				ret.append("    @Size");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(max=");
+				ret.append(sirenParams.getSirenParam(SirenParams.MaxSize, SirenParams.Max));
+				ret.append(")");
+			}
 		}
 		return ret.toString(); 
     }
