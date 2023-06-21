@@ -56,6 +56,9 @@ public class SirenJpaInContext {
 			if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null) {
 				includes.put("import javax.validation.constraints.NotBlank;", "import javax.validation.constraints.NotBlank;");
 			}
+			if(sirenParams.getSirenParam(SirenParams.FutureOrPresent, SirenParams.Exists) != null) {
+				includes.put("import javax.validation.constraints.FutureOrPresent;", "import javax.validation.constraints.FutureOrPresent;");
+			}			
 			if(	   sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null
 				|| sirenParams.getSirenParam(SirenParams.KeyNotNull, SirenParams.Exists) != null) {
 				includes.put("import javax.validation.constraints.NotNull;", "import javax.validation.constraints.NotNull;");
@@ -63,9 +66,15 @@ public class SirenJpaInContext {
 			if(sirenParams.getSirenParam(SirenParams.ArabicOrEnglishOnlyConstraint, SirenParams.Exists) != null) {
 				includes.put("import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;", "import com.sirenanalytics.booking.model.validation.ArabicOrEnglishOnlyConstraint;");
 			}
+			if(sirenParams.getSirenParam(SirenParams.JsonIgnore, SirenParams.Exists) != null) {
+				includes.put("import com.fasterxml.jackson.annotation.JsonIgnore;", "import com.fasterxml.jackson.annotation.JsonIgnore;");
+			}			
 			if(sirenParams.getSirenParam(SirenParams.EmailConstraint, SirenParams.Exists) != null) {
 				includes.put("import com.sirenanalytics.booking.model.validation.EmailConstraint;", "import com.sirenanalytics.booking.model.validation.EmailConstraint;");
 			}
+			if(sirenParams.getSirenParam(SirenParams.EmailNotMandatoryConstraint, SirenParams.Exists) != null) {
+				includes.put("import com.sirenanalytics.booking.model.validation.EmailNotMandatoryConstraint;", "import com.sirenanalytics.booking.model.validation.EmailNotMandatoryConstraint;");
+			}			
 			if(sirenParams.getSirenParam(SirenParams.LebaneseMobileConstraint, SirenParams.Exists) != null) {
 				includes.put("import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;", "import com.sirenanalytics.booking.model.validation.LebaneseMobileConstraint;");
 			}
@@ -190,6 +199,27 @@ public class SirenJpaInContext {
 				ret.append(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Message));
 				ret.append("\")");
 			}
+			if(    sirenParams.getSirenParam(SirenParams.FutureOrPresent, SirenParams.Exists) != null
+			    && sirenParams.getSirenParam(SirenParams.FutureOrPresent, SirenParams.Message) != null
+					) {
+				ret.append("    @FutureOrPresent");
+				//ret.append(SirenParams.NoBlanks);
+				ret.append("(message=\"");
+				ret.append(sirenParams.getSirenParam(SirenParams.FutureOrPresent, SirenParams.Message));
+				ret.append("\")");
+			}
+			if(    sirenParams.getSirenParam(SirenParams.OrderBy, SirenParams.Exists) != null
+				&& sirenParams.getSirenParam(SirenParams.OrderBy, SirenParams.Expression) != null
+					) {
+					ret.append("    @OrderBy");
+					//ret.append(SirenParams.NoBlanks);
+					ret.append("(\"");
+					ret.append(sirenParams.getSirenParam(SirenParams.OrderBy, SirenParams.Expression));
+					ret.append("\")");
+			}			
+			if(    sirenParams.getSirenParam(SirenParams.JsonIgnore, SirenParams.Exists) != null) {
+				ret.append("    @JsonIgnore");
+			}
 			//NotNulls
 			if(    sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Exists) != null
 			    && sirenParams.getSirenParam(SirenParams.NoNulls, SirenParams.Message) != null
@@ -230,7 +260,12 @@ public class SirenJpaInContext {
 				if(ret.length() > 0) ret.append("\n");
 				ret.append("    @");
 				ret.append(SirenParams.EmailConstraint);
-			}			
+			}
+			if(		sirenParams.getSirenParam(SirenParams.EmailNotMandatoryConstraint, SirenParams.Exists) != null) {
+				if(ret.length() > 0) ret.append("\n");
+				ret.append("    @");
+				ret.append(SirenParams.EmailNotMandatoryConstraint);
+			}						
 			if(        sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Exists) != null
 				    && sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Min) != null
 				    && sirenParams.getSirenParam(SirenParams.MinMaxSize, SirenParams.Max) != null
