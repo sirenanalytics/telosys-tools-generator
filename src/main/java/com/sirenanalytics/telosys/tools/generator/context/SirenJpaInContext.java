@@ -56,6 +56,12 @@ public class SirenJpaInContext {
 			if(sirenParams.getSirenParam(SirenParams.NoBlanks, SirenParams.Exists) != null) {
 				includes.put("import javax.validation.constraints.NotBlank;", "import javax.validation.constraints.NotBlank;");
 			}
+			if(sirenParams.getSirenParam(SirenParams.JsonBackReference, SirenParams.Exists) != null) {
+				includes.put("import com.fasterxml.jackson.annotation.JsonBackReference;", "import com.fasterxml.jackson.annotation.JsonBackReference;");
+			}
+			if(sirenParams.getSirenParam(SirenParams.JsonManagedReference, SirenParams.Exists) != null) {
+				includes.put("import com.fasterxml.jackson.annotation.JsonManagedReference;", "import com.fasterxml.jackson.annotation.JsonManagedReference;");
+			}
 			if(sirenParams.getSirenParam(SirenParams.FutureOrPresent, SirenParams.Exists) != null) {
 				includes.put("import javax.validation.constraints.FutureOrPresent;", "import javax.validation.constraints.FutureOrPresent;");
 			}			
@@ -217,6 +223,12 @@ public class SirenJpaInContext {
 					ret.append(sirenParams.getSirenParam(SirenParams.OrderBy, SirenParams.Expression));
 					ret.append("\")");
 			}			
+			if(    sirenParams.getSirenParam(SirenParams.JsonBackReference, SirenParams.Exists) != null) {
+				ret.append("    @JsonBackReference");
+			}
+			if(    sirenParams.getSirenParam(SirenParams.JsonManagedReference, SirenParams.Exists) != null) {
+				ret.append("    @JsonManagedReference");
+			}
 			if(    sirenParams.getSirenParam(SirenParams.JsonIgnore, SirenParams.Exists) != null) {
 				ret.append("    @JsonIgnore");
 			}
