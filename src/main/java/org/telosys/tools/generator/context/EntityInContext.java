@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.telosys.tools.commons.ListUtil;
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.plugins.IPluginAnnotationData;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
 import org.telosys.tools.generator.context.doc.VelocityNoDoc;
@@ -99,6 +100,14 @@ public class EntityInContext
 	private final String  databaseTablespace; // v 3.4.0	
 
 	private final boolean isJoinEntity ; // v 4.1.0
+	
+	//SICODE - Begin
+    IPluginAnnotationData pluginAnnotationData;
+    
+	public IPluginAnnotationData getPluginAnnotationData() {
+		return pluginAnnotationData;
+	}
+	//SICODE - End
 	
 	//-----------------------------------------------------------------------------------------------
 	/**
@@ -185,6 +194,8 @@ public class EntityInContext
 
 		this.isJoinEntity = entity.isJoinEntity() ; // v 4.1.0
 
+		pluginAnnotationData = entity.getPluginAnnotationData();//SICODE
+		
 		//--- Post processing : import resolution
 		endOfAttributesDefinition();
 	}

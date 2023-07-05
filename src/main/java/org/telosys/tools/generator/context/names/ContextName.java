@@ -97,8 +97,6 @@ public class ContextName {
 	public static final String  FACTORY           = "factory" ; // ver 3.4.0
 	public static final String  REFERENCE         = "reference" ; // ver 3.4.0
 	
-	//SICODE
-	public static final String  SIJPA             = "sijpa" ; // ver 2.0.7
 	
 	// NB : don't forget to also add :
 	//   - the name in "ContextNames" ("ContextNames" class with "s" at the end)

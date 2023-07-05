@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.telosys.tools.commons.StrUtil;
+import org.telosys.tools.commons.plugins.IPluginAnnotationData;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.GeneratorUtil;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
@@ -29,7 +30,6 @@ import org.telosys.tools.generator.languages.types.TypeConverter;
 import org.telosys.tools.generic.model.CascadeOptions;
 import org.telosys.tools.generic.model.Link;
 import org.telosys.tools.generic.model.LinkAttribute;
-import org.telosys.tools.generic.model.SirenParams;
 import org.telosys.tools.generic.model.TagContainer;
 import org.telosys.tools.generic.model.enums.BooleanValue;
 import org.telosys.tools.generic.model.enums.Cardinality;
@@ -98,9 +98,10 @@ public class LinkInContext {
 	private final boolean      isOrphanRemoval ; // Added in v 4.1.0
 
 	//SICODE - Begin
-	private SirenParams sirenParams;
-	public SirenParams getSirenParams() {
-		return sirenParams;
+    IPluginAnnotationData pluginAnnotationData;
+    
+	public IPluginAnnotationData getPluginAnnotationData() {
+		return pluginAnnotationData;
 	}
 	//SICODE - End
 	
@@ -154,7 +155,7 @@ public class LinkInContext {
 		this.isOrphanRemoval = link.isOrphanRemoval(); // v 4.1.0
 		
 		//SICODE - Begin
-		sirenParams = link.getSirenParams();
+		pluginAnnotationData = link.getPluginAnnotationData();
 		//SICODE - End		
 	}
 	
