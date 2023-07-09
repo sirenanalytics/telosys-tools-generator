@@ -234,7 +234,9 @@ public class Generator {
 					telosysToolsCfg.getDestinationFolderAbsolutePath() ); // v 3.0.0
 			logger.log("Saving target file : " + outputFileName );
 //			saveStreamInFile(is, outputFileName, true );
-			saveResultInFile(result, outputFileName, true); // v 3.0.0
+			if (result != null && !result.isBlank()) {//SICODE
+				saveResultInFile(result, outputFileName, true); // v 3.0.0
+			}//SICODE
 			logger.info("OK :  " + target.getOutputFileNameInProject() );
 			
 			//--- Add the generated target in the list if any
