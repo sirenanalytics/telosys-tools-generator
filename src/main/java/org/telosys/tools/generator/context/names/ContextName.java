@@ -97,7 +97,6 @@ public class ContextName {
 	public static final String  FACTORY           = "factory" ; // ver 3.4.0
 	public static final String  REFERENCE         = "reference" ; // ver 3.4.0
 	
-	
 	// NB : don't forget to also add :
 	//   - the name in "ContextNames" ("ContextNames" class with "s" at the end)
 	//   - the class in "doc.tooling.ObjectsList"

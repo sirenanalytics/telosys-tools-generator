@@ -155,7 +155,7 @@ public class GeneratorContextBuilder {
 		generatorContext.put(ContextName.CSHARP,          new CsharpInContext());  // C# utilities ( ver 4.1.0 )
 		
 		//SICODE
-		PluginHandler.putGeneratorContexts(generatorContext, model, bundleName);
+		PluginHandler.putGeneratorContexts(generatorContext, telosysToolsCfg, model, bundleName);
 
 		//--- Set the dynamic class loader 
 		Loader loader = new Loader( telosysToolsCfg.getTemplatesFolderAbsolutePath(bundleName) ); 
