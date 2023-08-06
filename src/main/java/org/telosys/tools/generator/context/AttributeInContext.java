@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.telosys.tools.commons.StrUtil;
-import org.telosys.tools.commons.plugins.IPluginAnnotationData;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.GeneratorUtil;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
@@ -172,13 +171,6 @@ public class AttributeInContext {
 	
     private final boolean isUnique ;  // v 3.4.0
 
-	//SICODE - Begin
-    IPluginAnnotationData pluginAnnotationData;
-    
-	public IPluginAnnotationData getPluginAnnotationData() {
-		return pluginAnnotationData;
-	}
-	//SICODE - End
 
     //-----------------------------------------------------------------------------------------------
 	/**
@@ -293,7 +285,6 @@ public class AttributeInContext {
 		
 		this.isUnique = attribute.isUnique() ;  // v 3.4.0
 
-		pluginAnnotationData = attribute.getPluginAnnotationData();//SICODE
 	}
 
 	protected final LanguageType getLanguageType() {

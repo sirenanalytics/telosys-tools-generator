@@ -19,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.telosys.tools.commons.StrUtil;
-import org.telosys.tools.commons.plugins.IPluginAnnotationData;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.GeneratorUtil;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
@@ -97,14 +96,6 @@ public class LinkInContext {
 
 	private final boolean      isOrphanRemoval ; // Added in v 4.1.0
 
-	//SICODE - Begin
-    IPluginAnnotationData pluginAnnotationData;
-    
-	public IPluginAnnotationData getPluginAnnotationData() {
-		return pluginAnnotationData;
-	}
-	//SICODE - End
-	
 	//-------------------------------------------------------------------------------------
 	/**
 	 * Constructor
@@ -153,10 +144,6 @@ public class LinkInContext {
 		this.tagContainer = link.getTagContainer(); // V 3.4.0
 		
 		this.isOrphanRemoval = link.isOrphanRemoval(); // v 4.1.0
-		
-		//SICODE - Begin
-		pluginAnnotationData = link.getPluginAnnotationData();
-		//SICODE - End		
 	}
 	
 	/**
@@ -213,27 +200,6 @@ public class LinkInContext {
 
 	//-------------------------------------------------------------------------------------
 
-	@VelocityMethod(
-			text={
-					"Returns the link's DTO type with n trailing blanks ",
-					"eg : List, List<PersonDTO>, PersonDTO, ..."
-			},
-			parameters = {
-					"n : the number of blanks to be added at the end of the name"
-			}
-	)
-	public String formattedDTOFieldType(int iSize) {
-		String currentType = getFieldTypeDTO();
-		String sTrailingBlanks = "";
-		int iDelta = iSize - currentType.length();
-		if (iDelta > 0) // if needs trailing blanks
-		{
-			sTrailingBlanks = GeneratorUtil.blanks(iDelta);
-		}
-		return currentType + sTrailingBlanks;
-	}
-
-	//-------------------------------------------------------------------------------------
 	@VelocityMethod(
 		text={	
 			"Returns the link's name with n trailing blanks "
@@ -412,21 +378,6 @@ public class LinkInContext {
 		}
 	}	
 	
-	//-------------------------------------------------------------------------------------
-	@VelocityMethod(
-			text={
-					"Returns the DTO type of the link ",
-					"eg : PersonDTO, List<PersonDTO>,  ..."
-			}
-	)
-	public String getFieldTypeDTO() {
-		String targetEntityClassName = this.getTargetEntitySimpleType() + "DTO" ;
-		if ( this.isCollectionType() ) {
-			return buildCollectionType(targetEntityClassName);
-		} else {
-			return targetEntityClassName ;
-		}
-	}
 
 	//-------------------------------------------------------------------------------------
 	@VelocityMethod(

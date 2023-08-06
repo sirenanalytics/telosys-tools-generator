@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.telosys.tools.commons.ListUtil;
 import org.telosys.tools.commons.StrUtil;
-import org.telosys.tools.commons.plugins.IPluginAnnotationData;
+import org.telosys.tools.commons.plugins.PluginHandler;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
 import org.telosys.tools.generator.context.doc.VelocityNoDoc;
@@ -101,14 +101,6 @@ public class EntityInContext
 
 	private final boolean isJoinEntity ; // v 4.1.0
 	
-	//SICODE - Begin
-    IPluginAnnotationData pluginAnnotationData;
-    
-	public IPluginAnnotationData getPluginAnnotationData() {
-		return pluginAnnotationData;
-	}
-	//SICODE - End
-	
 	//-----------------------------------------------------------------------------------------------
 	/**
 	 * Constructor
@@ -157,14 +149,20 @@ public class EntityInContext
 		//--- Initialize all the ATTRIBUTES for the current entity
 		this.attributes = new LinkedList<>();
 		for ( Attribute attribute : entity.getAttributes() ) { // v 3.0.0
-			AttributeInContext attributeInContext = new AttributeInContext(this, attribute, this.modelInContext, this.env);
+			AttributeInContext attributeInContext = (AttributeInContext) PluginHandler.newAttributeInContext(this, attribute, this.modelInContext, this.env);
+			if (attributeInContext == null) {
+				attributeInContext = new AttributeInContext(this, attribute, this.modelInContext, this.env);	
+			}
 			this.attributes.add(attributeInContext);
 		}
 
 		//--- Initialize all the LINKS for the current entity
 		this.links = new LinkedList<>();
-		for ( Link link : entity.getLinks() ) { 
-			LinkInContext linkInContext = new LinkInContext(this, link, this.modelInContext, this.env ); 
+		for ( Link link : entity.getLinks() ) {
+			LinkInContext linkInContext = (LinkInContext) PluginHandler.newLinkInContext(this, link, this.modelInContext, this.env);
+			if (linkInContext == null) {
+				linkInContext = new LinkInContext(this, link, this.modelInContext, this.env );
+			}
 			this.links.add(linkInContext);
 		}
 		
@@ -194,8 +192,6 @@ public class EntityInContext
 
 		this.isJoinEntity = entity.isJoinEntity() ; // v 4.1.0
 
-		pluginAnnotationData = entity.getPluginAnnotationData();//SICODE
-		
 		//--- Post processing : import resolution
 		endOfAttributesDefinition();
 	}

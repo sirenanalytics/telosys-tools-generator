@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.telosys.tools.commons.NamingStyleConverter;
 import org.telosys.tools.commons.cfg.TelosysToolsCfg;
+import org.telosys.tools.commons.plugins.PluginHandler;
 import org.telosys.tools.generator.GeneratorException;
 import org.telosys.tools.generator.context.doc.VelocityMethod;
 import org.telosys.tools.generator.context.doc.VelocityNoDoc;
@@ -97,11 +98,15 @@ public class ModelInContext
 		//--- All the entities (the original model order is kept)
 		this.allEntities = new LinkedList<>(); // v 3.0.0
 		for ( Entity entity : model.getEntities() ) { // v 3.0.0
+			EntityInContext entityInContext = (EntityInContext) PluginHandler.newEntityInContext(entity, telosysToolsCfg.getEntityPackage(), this, env);
+			if (entityInContext == null) {
+				entityInContext = new EntityInContext(entity, 
+						telosysToolsCfg.getEntityPackage(),  // v 3.3.0
+						this, env);
+			}
+			
 			//_allEntities.add( new EntityInContext(entity, entitiesPackage, this, env) );// v 3.0.0
-			this.allEntities.add( 
-					new EntityInContext(entity, 
-							telosysToolsCfg.getEntityPackage(),  // v 3.3.0
-							this, env) );
+			this.allEntities.add(entityInContext); 
 		}
 		
 		//--- Entities by TABLE NAME
